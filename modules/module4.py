@@ -13,7 +13,7 @@ OUTPUT_MD = os.path.join("reports", "module4.md")
 
 # Base Dimensions (At Scale 1.0)
 BASE_WIDTH = 1600
-BASE_HEIGHT = 500
+BASE_HEIGHT = 700
 BASE_MARGIN = 40
 BASE_SPACING = 20
 

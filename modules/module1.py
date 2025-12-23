@@ -148,7 +148,7 @@ class IndustrialColorStudy:
             draw.rectangle([0, y0, w, y1], fill=tuple(int(c*255) for c in final_col))
         return img
 
-    def assemble(self, scale=DEFAULT_SCALE):
+    def assemble(self, scale=DEFAULT_SCALE, include_header=True):
         self.load_fonts(scale)
         w, h = int(BASE_WIDTH * scale), int(BASE_HEIGHT * scale)
         margin, spacing = int(BASE_MARGIN * scale), int(BASE_SPACING * scale)
@@ -156,26 +156,34 @@ class IndustrialColorStudy:
         panel_h = int(BASE_PANEL_H * scale)
         bar_w = int(BASE_BAR_W * scale)
 
-        canvas = Image.new('RGB', (w, h), BG_COLOR)
-        draw = ImageDraw.Draw(canvas)
-        
-        # 1. Header
-        title_text = "MODULE 1: ALIGNED LINEAR ANALYSIS"
-        id_text = "ID: NORD_MOD1_LINEAR"
-        
-        # Title (Top Left)
-        draw.text((margin, margin), title_text, fill=TEXT_MAIN, font=self.font_header)
-        
-        # ID (Top Right)
-        id_bbox = draw.textbbox((0, 0), id_text, font=self.font_tiny)
-        id_w = id_bbox[2] - id_bbox[0]
-        draw.text((w - margin - id_w, margin + int(5 * scale)), id_text, fill=TEXT_DIM, font=self.font_tiny)
-        
-        # Line
         line_y = margin + int(40 * scale)
-        draw.line([(margin, line_y), (w - margin, line_y)], fill=UI_BORDER, width=max(1, int(1 * scale)))
-        
         content_y = line_y + spacing + int(20 * scale)
+        
+        if not include_header:
+            # Calculate tight height for content only
+            h = panel_h + (2 * spacing) # some padding
+            canvas = Image.new('RGB', (w, h), BG_COLOR)
+            draw = ImageDraw.Draw(canvas)
+            content_y = spacing
+        else:
+            canvas = Image.new('RGB', (w, h), BG_COLOR)
+            draw = ImageDraw.Draw(canvas)
+            
+            # 1. Header
+            title_text = "MODULE 1: ALIGNED LINEAR ANALYSIS"
+            id_text = "ID: NORD_MOD1_LINEAR"
+            
+            # Title (Top Left)
+            draw.text((margin, margin), title_text, fill=TEXT_MAIN, font=self.font_header)
+            
+            # ID (Top Right)
+            id_bbox = draw.textbbox((0, 0), id_text, font=self.font_tiny)
+            id_w = id_bbox[2] - id_bbox[0]
+            draw.text((w - margin - id_w, margin + int(5 * scale)), id_text, fill=TEXT_DIM, font=self.font_tiny)
+            
+            # Line
+            draw.line([(margin, line_y), (w - margin, line_y)], fill=UI_BORDER, width=max(1, int(1 * scale)))
+        
         cursor_x = margin
         
         # --- 1. COLUMNS ---
@@ -193,6 +201,10 @@ class IndustrialColorStudy:
             canvas.paste(v, (cursor_x, content_y))
             self.draw_ui_element(draw, cursor_x, content_y, panel_w, panel_h, label, id_str, scale)
             cursor_x += panel_w + spacing
+
+        if not include_header:
+            # Crop to actual content width if needed, but let's keep BASE_WIDTH for consistency
+            return canvas.crop((0, 0, w, content_y + panel_h + spacing))
 
         return canvas
 

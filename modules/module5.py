@@ -31,8 +31,8 @@ FONT_URL = ""
 rgb_palette = []
 
 # Base Dimensions (At Scale 1.0)
-BASE_WIDTH = 600
-BASE_HEIGHT = 1300 
+BASE_WIDTH = 1600
+BASE_HEIGHT = 1100 
 BASE_MARGIN = 40
 BASE_SPACING = 20
 
@@ -74,6 +74,7 @@ def generate_contour_grid(width_px, height_px):
     fig, axes = plt.subplots(rows, cols, figsize=(fig_w, fig_h), dpi=dpi)
     plt.subplots_adjust(wspace=0, hspace=0, left=0, right=1, top=1, bottom=0)
     fig.patch.set_facecolor(BG_COLOR_HEX)
+    fig.set_edgecolor(BG_COLOR_HEX)
 
     x = np.linspace(0, 1, resolution)
     y = np.linspace(0, 1, resolution)
@@ -98,6 +99,7 @@ def generate_contour_grid(width_px, height_px):
         return z
 
     for i, ax in enumerate(axes.flat):
+        ax.set_facecolor(BG_COLOR_HEX)
         if i >= len(PALETTE_HEX): 
             # Fill empty squares with random colors from the palette
             color_hex = np.random.choice(PALETTE_HEX)
@@ -118,7 +120,7 @@ def generate_contour_grid(width_px, height_px):
         ax.set_aspect('equal')
 
     buf = io.BytesIO()
-    plt.savefig(buf, format='png', facecolor=BG_COLOR_HEX)
+    plt.savefig(buf, format='png', facecolor=BG_COLOR_HEX, edgecolor=BG_COLOR_HEX, bbox_inches='tight', pad_inches=0)
     plt.close(fig)
     buf.seek(0)
     return Image.open(buf)
@@ -247,23 +249,25 @@ class Module5Normalized:
         
         content_y = line_y + spacing + int(20 * scale)
         
-        # --- TOP: 4x4 CONTOUR GRID ---
-        grid_width = w - (2 * margin)
+        # --- LEFT: 4x4 CONTOUR GRID ---
+        # We'll make the grid and polar plot side-by-side
+        available_width = w - (2 * margin) - spacing
+        panel_w = available_width // 2
+        
+        grid_width = panel_w
         grid_height = grid_width 
         
         contour_img = generate_contour_grid(grid_width, grid_height)
         canvas.paste(contour_img, (margin, content_y))
         self.draw_ui_element(draw, margin, content_y, grid_width, grid_height, "12-BIT COLSPACE", "ID:24", scale)
         
-        curr_y = content_y + grid_height + spacing + int(40 * scale)
-        
-        # --- BOTTOM: POLAR PLOT ---
+        # --- RIGHT: POLAR PLOT ---
         polar_radius = grid_width // 2
-        polar_center_x = w // 2
-        polar_center_y = curr_y + polar_radius
+        polar_center_x = margin + grid_width + spacing + polar_radius
+        polar_center_y = content_y + polar_radius
         
         self.draw_polar_plot_normalized(canvas, polar_center_x, polar_center_y, polar_radius, rgb_palette, scale)
-        self.draw_ui_element(draw, polar_center_x - polar_radius, curr_y, polar_radius*2, polar_radius*2, "POLAR_SAT", "ID:P01", scale)
+        self.draw_ui_element(draw, polar_center_x - polar_radius, content_y, polar_radius*2, polar_radius*2, "POLAR_SAT", "ID:P01", scale)
 
         return canvas
 

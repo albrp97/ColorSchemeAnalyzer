@@ -6,6 +6,7 @@ from modules import module5
 from modules import module6
 from modules import module7
 from modules import module8
+from modules import ultimate
 import os
 import colorsys
 
@@ -21,7 +22,7 @@ import colorsys
 #          "Eva_Unit00_Proto", "Eva_Unit02", "Eva_Unit06", "Eva_Unit08",
 #          "Eva_MassProd", "Matrix", "GhostInTheShell", "HankaRobotics",
 #          "Akira", "BladeRunner", "BladeRunner2049", "MrRobot"
-CURRENT_THEME_NAME = "Nord" 
+CURRENT_THEME_NAME = "Artzen" 
 
 # Global Scale: 1.0 = Native, 0.5 = Pixelated, 2.0 = High Definition
 GLOBAL_SCALE = 0.5
@@ -156,7 +157,7 @@ THEMES = {
     "GhostInTheShell": [ # 1995 Anime: Thermoptic Blue, City Grey, Wireframe Green
         "#12161a", "#1b2630", "#263645", "#384d5e", "#5c707d", 
         "#bdc3c7", "#d1d8e0", "#ecf0f1", "#00a8ff", "#0097e6", 
-        "#4cd137", "#e1b12c", "#c23616", "#2f3640", "#7f8fa6"
+        "#4cd137", "#2f3640", "#7f8fa6"
     ],
     "HankaRobotics": [ # Corporate: Sterile Lab White, Surgical Steel, Logo Red
         "#0f1114", "#161b22", "#21262d", "#30363d", "#484f58", 
@@ -182,11 +183,40 @@ THEMES = {
         "#000000", "#0a0a0a", "#1a1a1a", "#333333", "#4d4d4d", 
         "#b3b3b3", "#e6e6e6", "#ffffff", "#b90e0a", "#e74c3c", 
         "#008080", "#20b2aa", "#40e0d0", "#7fdbff", "#f0f0f0"
+    ],"Pikachu": [ # Electric Rodent: Black/Brown darks, vibrant Yellows, Red cheeks
+        "#1a1712", "#2c2924", "#4a443b", "#756953", "#c7b695", 
+        "#f8f2e0", "#fcd147", "#ffd700", "#e74c3c", "#c0392b", 
+        "#6d4c41", "#f4e64a", "#ffffff"
+    ],
+    "Rainbow": [ # The Spectrum: Dark neutral background to make colors pop
+        "#101010", "#1a1a1a", "#333333", "#707070", "#f0f0f0", 
+        "#ffffff", "#ff0000", "#ff7f00", "#ffff00", "#00ff00", 
+        "#0000ff", "#4b0082", "#9400d3", "#e64980", "#ff8787"
+    ],
+    "DunePart1": [ # Arrakis Day: Desert sands, spice, deep shadows, pale sky
+        "#14110f", "#1f1b18", "#3b3228", "#5c5142", "#8c7b66", 
+        "#d9c7a8", "#f7e7ce", "#c27843", "#e67e22", "#d35400", 
+        "#a67b5b", "#8c6046", "#b08d57", "#e69b56"
+    ],
+    "DunePart2": [ # Giedi Prime & War: Monochrome sun, brutal reds, stark contrast
+        "#0a0a0a", "#141414", "#212121", "#404040", "#808080", 
+        "#d1d1d1", "#ffffff", "#7a1313", "#a61a1a", "#e74c3c", 
+        "#ff2200", "#c0392b", "#f39c12", "#95a5a6"
+    ],
+    "Ocean": [ # The Abyss to Surface: Deep trenches, vibrant reefs, seafoam
+        "#05111a", "#0a1e2b", "#132e40", "#1d435c", "#356380", 
+        "#668da3", "#9ec4d9", "#e0f7fa", "#005b96", "#03396c", 
+        "#0077be", "#00a8e8", "#00b894", "#55efc4", "#ff7675"
+    ],
+    "Galaxy": [ # Deep Space: Vantablack, nebular purples/pinks, bright starpoints
+        "#030308", "#0d0d1a", "#1a1a2e", "#2b2b4a", "#454569", 
+        "#c0c0d9", "#e6e6fa", "#ffffff", "#6a0dad", "#8a2be2", 
+        "#ff00ff", "#e056fd", "#00ffff", "#00bfff", "#4169e1"
     ],
 }
 
 # ==========================================
-# CORE LOGIC
+# INTERFACE
 # ==========================================
 
 def hex_to_rgb(hex_str):
@@ -199,6 +229,45 @@ def hex_to_rgb(hex_str):
         h = h[:6]
         
     return tuple(int(h[i:i+2], 16) for i in (0, 2, 4))
+
+def select_theme_terminal(themes):
+    """
+    Creates a terminal-based interface to select a theme with color previews.
+    """
+    print("\n" + "="*50)
+    print(" SELECT COLOR SCHEME")
+    print("="*50 + "\n")
+    
+    sorted_names = sorted(themes.keys())
+    
+    for i, name in enumerate(sorted_names):
+        colors = themes[name]
+        # Create a small color strip using ANSI escape codes
+        color_strip = ""
+        for hex_color in colors[:10]: # Show first 10 colors
+            r, g, b = hex_to_rgb(hex_color)
+            # ANSI background color: \033[48;2;R;G;Bm  \033[0m
+            color_strip += f"\033[48;2;{r};{g};{b}m  \033[0m"
+        
+        print(f"[{i+1:2}] {name:20} {color_strip}")
+    
+    print("\n" + "="*50)
+    try:
+        choice = input(f"\nSelect a theme (1-{len(sorted_names)}) or press Enter for default: ").strip()
+        if not choice:
+            return None
+        
+        idx = int(choice) - 1
+        if 0 <= idx < len(sorted_names):
+            return sorted_names[idx]
+    except (ValueError, IndexError, KeyboardInterrupt):
+        pass
+    
+    return None
+
+# ==========================================
+# CORE LOGIC
+# ==========================================
 
 def get_luminance(rgb): 
     return 0.299*rgb[0] + 0.587*rgb[1] + 0.114*rgb[2]
@@ -244,13 +313,16 @@ def generate_color_scheme(theme_name, palette_hex):
     }
 
 def main():
-    if CURRENT_THEME_NAME not in THEMES:
-        print(f"Error: Theme '{CURRENT_THEME_NAME}' not found. Defaulting to Nord.")
-        active_palette = THEMES["Nord"]
-        active_name = "Nord"
+    # Launch the terminal theme selector
+    selected = select_theme_terminal(THEMES)
+    if selected:
+        active_name = selected
+        active_palette = THEMES[selected]
     else:
-        active_palette = THEMES[CURRENT_THEME_NAME]
+        # If no selection made, use the default from config
+        print(f"Using default theme: {CURRENT_THEME_NAME}")
         active_name = CURRENT_THEME_NAME
+        active_palette = THEMES.get(active_name, THEMES["Nord"])
 
     # Generate the scheme object
     scheme = generate_color_scheme(active_name, active_palette)
@@ -276,6 +348,12 @@ def main():
         except Exception as e:
             print(f"Error executing {name}: {e}")
             
+    # Generate the ultimate combined image
+    try:
+        ultimate.run(scale=GLOBAL_SCALE, color_scheme=scheme)
+    except Exception as e:
+        print(f"Error generating ultimate image: {e}")
+
     print("\nAll modules executed successfully.")
     print("Images: ./images/")
     print("Reports: ./reports/")
