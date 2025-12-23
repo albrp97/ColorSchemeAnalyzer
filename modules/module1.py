@@ -3,7 +3,6 @@ from PIL import Image, ImageDraw, ImageFont
 import colorsys
 import os
 import urllib.request
-import math
 
 # ==========================================
 # CONFIGURATION
@@ -11,10 +10,6 @@ import math
 DEFAULT_SCALE = 1.0
 OUTPUT_IMAGE = os.path.join("images", "module1.png")
 OUTPUT_MD = os.path.join("reports", "module1.md")
-
-# Fonts
-FONT_FILENAME = "JetBrainsMono-Regular.ttf"
-FONT_URL = "https://github.com/JetBrains/JetBrainsMono/raw/master/fonts/ttf/JetBrainsMono-Regular.ttf"
 
 # Base Dimensions (At Scale 1.0)
 BASE_WIDTH = 1470
@@ -25,34 +20,35 @@ BASE_PANEL_H = 300
 BASE_BAR_W = 50
 BASE_SPACING = 20
 
-# Nord Palette Definition
-PALETTE_HEX = [
-    "#2E3440", "#3B4252", "#434C5E", "#4C566A", # Polar Night
-    "#D8DEE9", "#E5E9F0", "#ECEFF4",            # Snow Storm
-    "#8FBCBB", "#88C0D0", "#81A1C1", "#5E81AC", # Frost
-    "#BF616A", "#D08770", "#EBCB8B", "#A3BE8C", "#B48EAD" # Aurora
-]
+# Configuration inherited from main.py
+PALETTE_HEX = []
+BG_COLOR = (0, 0, 0)
+UI_BORDER = (0, 0, 0)
+TEXT_MAIN = (0, 0, 0)
+TEXT_DIM = (0, 0, 0)
+ACCENT = (0, 0, 0)
+FONT_FILENAME = ""
+FONT_URL = ""
 
-def hex_to_rgb(hex_str):
-    h = hex_str.lstrip('#')
-    return tuple(int(h[i:i+2], 16) for i in (0, 2, 4))
+def run(scale=DEFAULT_SCALE, color_scheme=None):
+    if color_scheme:
+        global PALETTE_HEX, BG_COLOR, UI_BORDER, TEXT_MAIN, TEXT_DIM, ACCENT, FONT_FILENAME, FONT_URL
+        PALETTE_HEX = color_scheme['PALETTE_HEX']
+        BG_COLOR = color_scheme['BG_COLOR']
+        UI_BORDER = color_scheme['UI_BORDER']
+        TEXT_MAIN = color_scheme['TEXT_MAIN']
+        TEXT_DIM = color_scheme['TEXT_DIM']
+        ACCENT = color_scheme['ACCENT']
+        FONT_FILENAME = color_scheme['FONT_FILENAME']
+        FONT_URL = color_scheme['FONT_URL']
 
-def get_luminance(rgb): return 0.299*rgb[0] + 0.587*rgb[1] + 0.114*rgb[2]
-def get_saturation(rgb):
-    r, g, b = [x/255.0 for x in rgb]
-    _, s, _ = colorsys.rgb_to_hsv(r, g, b)
-    return s
-
-_rgb_palette = [hex_to_rgb(c) for c in PALETTE_HEX]
-_sorted_by_lum = sorted(_rgb_palette, key=get_luminance)
-_sorted_by_sat = sorted(_rgb_palette, key=get_saturation)
-
-# UI Colors (Extracted from Palette)
-BG_COLOR = _sorted_by_lum[0]
-UI_BORDER = _sorted_by_lum[min(3, len(_sorted_by_lum)-1)]
-TEXT_MAIN = _sorted_by_lum[-1]
-TEXT_DIM  = UI_BORDER
-ACCENT    = _sorted_by_sat[-1]
+    os.makedirs("images", exist_ok=True)
+    os.makedirs("reports", exist_ok=True)
+    study = IndustrialColorStudy(PALETTE_HEX)
+    img = study.assemble(scale)
+    img.save(OUTPUT_IMAGE)
+    study.generate_markdown()
+    print(f"Saved {OUTPUT_IMAGE}")
 
 class IndustrialColorStudy:
     def __init__(self, palette_hex):
@@ -220,15 +216,6 @@ Voronoi diagrams showing which palette color is the nearest match for a given Hu
         with open(OUTPUT_MD, "w") as f:
             f.write(md_content)
         print(f"Markdown saved to {OUTPUT_MD}")
-
-def run(scale=DEFAULT_SCALE):
-    os.makedirs("images", exist_ok=True)
-    os.makedirs("reports", exist_ok=True)
-    study = IndustrialColorStudy(PALETTE_HEX)
-    img = study.assemble(scale)
-    img.save(OUTPUT_IMAGE)
-    study.generate_markdown()
-    print(f"Saved {OUTPUT_IMAGE}")
 
 if __name__ == "__main__":
     run()

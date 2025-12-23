@@ -17,38 +17,39 @@ BASE_WIDTH = 1600
 BASE_HEIGHT = 1000
 BASE_MARGIN = 40
 BASE_SPACING = 20
-# Nord Palette
-PALETTE_HEX = [
-    "#2E3440", "#3B4252", "#434C5E", "#4C566A", 
-    "#D8DEE9", "#E5E9F0", "#ECEFF4",            
-    "#8FBCBB", "#88C0D0", "#81A1C1", "#5E81AC", 
-    "#BF616A", "#D08770", "#EBCB8B", "#A3BE8C", "#B48EAD" 
-]
+# Configuration inherited from main.py
+PALETTE_HEX = []
+BG_COLOR = (0, 0, 0)
+TEXT_COLOR = (0, 0, 0)
+UI_BORDER = (0, 0, 0)
+TEXT_DIM = (0, 0, 0)
+ACCENT = (0, 0, 0)
+FONT_FILENAME = ""
+FONT_URL = ""
+rgb_palette = []
+palette_arr = np.array([])
 
-FONT_FILENAME = "JetBrainsMono-Regular.ttf"
-FONT_URL = "https://github.com/JetBrains/JetBrainsMono/raw/master/fonts/ttf/JetBrainsMono-Regular.ttf"
+def run(scale=DEFAULT_SCALE, color_scheme=None):
+    if color_scheme:
+        global PALETTE_HEX, BG_COLOR, TEXT_COLOR, UI_BORDER, TEXT_DIM, ACCENT, FONT_FILENAME, FONT_URL, rgb_palette, palette_arr
+        PALETTE_HEX = color_scheme['PALETTE_HEX']
+        BG_COLOR = color_scheme['BG_COLOR']
+        TEXT_COLOR = color_scheme['TEXT_MAIN']
+        UI_BORDER = color_scheme['UI_BORDER']
+        TEXT_DIM = color_scheme['TEXT_DIM']
+        ACCENT = color_scheme['ACCENT']
+        FONT_FILENAME = color_scheme['FONT_FILENAME']
+        FONT_URL = color_scheme['FONT_URL']
+        rgb_palette = [tuple(int(PALETTE_HEX[i].lstrip('#')[j:j+2], 16) for j in (0, 2, 4)) for i in range(len(PALETTE_HEX))]
+        palette_arr = np.array(rgb_palette)
 
-def hex_to_rgb(hex_str):
-    h = hex_str.lstrip('#')
-    return tuple(int(h[i:i+2], 16) for i in (0, 2, 4))
-
-rgb_palette = [hex_to_rgb(c) for c in PALETTE_HEX]
-palette_arr = np.array(rgb_palette)
-
-def get_luminance(rgb): return 0.299*rgb[0] + 0.587*rgb[1] + 0.114*rgb[2]
-def get_saturation(rgb):
-    r, g, b = [x/255.0 for x in rgb]
-    _, s, _ = colorsys.rgb_to_hsv(r, g, b)
-    return s
-
-_sorted_by_lum = sorted(rgb_palette, key=get_luminance)
-_sorted_by_sat = sorted(rgb_palette, key=get_saturation)
-
-BG_COLOR = _sorted_by_lum[0]
-TEXT_COLOR = _sorted_by_lum[-1]
-UI_BORDER = _sorted_by_lum[min(3, len(_sorted_by_lum)-1)]
-TEXT_DIM  = UI_BORDER
-ACCENT    = _sorted_by_sat[-1]
+    os.makedirs("images", exist_ok=True)
+    os.makedirs("reports", exist_ok=True)
+    study = Module7Complementaries()
+    img = study.assemble(scale)
+    img.save(OUTPUT_IMAGE)
+    study.generate_markdown()
+    print(f"Saved {OUTPUT_IMAGE}")
 
 class Module7Complementaries:
     def __init__(self):
@@ -219,16 +220,6 @@ Each box represents a 2D slice of color space:
         with open(OUTPUT_MD, "w") as f:
             f.write(md)
         print(f"Markdown saved to {OUTPUT_MD}")
-
-def run(scale=DEFAULT_SCALE):
-    os.makedirs("images", exist_ok=True)
-    os.makedirs("reports", exist_ok=True)
-    study = Module7Complementaries()
-    img = study.assemble(scale)
-    img.save(OUTPUT_IMAGE)
-    study.generate_markdown()
-    print(f"Saved {OUTPUT_IMAGE}")
-    print(f"MD Saved: {OUTPUT_MD}")
 
 if __name__ == "__main__":
     run()

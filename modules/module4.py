@@ -17,45 +17,57 @@ BASE_HEIGHT = 500
 BASE_MARGIN = 40
 BASE_SPACING = 20
 
-# Nord Palette
-PALETTE_HEX = [
-    "#2E3440", "#3B4252", "#434C5E", "#4C566A", 
-    "#D8DEE9", "#E5E9F0", "#ECEFF4",            
-    "#8FBCBB", "#88C0D0", "#81A1C1", "#5E81AC", 
-    "#BF616A", "#D08770", "#EBCB8B", "#A3BE8C", "#B48EAD" 
-]
+# Configuration inherited from main.py
+PALETTE_HEX = []
+BG_COLOR = (0, 0, 0)
+UI_BORDER = (0, 0, 0)
+TEXT_COLOR = (0, 0, 0)
+TEXT_DIM = (0, 0, 0)
+ACCENT = (0, 0, 0)
+FONT_FILENAME = ""
+FONT_URL = ""
 
-FONT_FILENAME = "JetBrainsMono-Regular.ttf"
-FONT_URL = "https://github.com/JetBrains/JetBrainsMono/raw/master/fonts/ttf/JetBrainsMono-Regular.ttf"
+# Derived
+rgb_palette = []
+luma_sorted_colors = []
+hue_sorted_colors = []
 
-def hex_to_rgb(hex_str):
-    h = hex_str.lstrip('#')
-    return tuple(int(h[i:i+2], 16) for i in (0, 2, 4))
+def run(scale=DEFAULT_SCALE, color_scheme=None):
+    if color_scheme:
+        global PALETTE_HEX, BG_COLOR, UI_BORDER, TEXT_COLOR, TEXT_DIM, ACCENT, FONT_FILENAME, FONT_URL
+        global rgb_palette, luma_sorted_colors, hue_sorted_colors
+        PALETTE_HEX = color_scheme['PALETTE_HEX']
+        BG_COLOR = color_scheme['BG_COLOR']
+        UI_BORDER = color_scheme['UI_BORDER']
+        TEXT_COLOR = color_scheme['TEXT_MAIN']
+        TEXT_DIM = color_scheme['TEXT_DIM']
+        ACCENT = color_scheme['ACCENT']
+        FONT_FILENAME = color_scheme['FONT_FILENAME']
+        FONT_URL = color_scheme['FONT_URL']
+        
+        # Derived for this module
+        rgb_palette = [tuple(int(PALETTE_HEX[i].lstrip('#')[j:j+2], 16) for j in (0, 2, 4)) for i in range(len(PALETTE_HEX))]
+        
+        luminance = [0.299*r + 0.587*g + 0.114*b for r,g,b in rgb_palette]
+        luma_sorted_indices = np.argsort(luminance)
+        luma_sorted_colors = [rgb_palette[i] for i in luma_sorted_indices]
 
-rgb_palette = [hex_to_rgb(c) for c in PALETTE_HEX]
+        hues = [colorsys.rgb_to_hsv(r/255, g/255, b/255)[0] for r,g,b in rgb_palette]
+        hue_sorted_indices = np.argsort(hues)
+        hue_sorted_colors = [rgb_palette[i] for i in hue_sorted_indices]
 
-# Sorters
-luminance = [0.299*r + 0.587*g + 0.114*b for r,g,b in rgb_palette]
-luma_sorted_indices = np.argsort(luminance)
-luma_sorted_colors = [rgb_palette[i] for i in luma_sorted_indices]
-
-hues = [colorsys.rgb_to_hsv(r/255, g/255, b/255)[0] for r,g,b in rgb_palette]
-hue_sorted_indices = np.argsort(hues)
-hue_sorted_colors = [rgb_palette[i] for i in hue_sorted_indices]
-
-def get_saturation(rgb):
-    r, g, b = [x/255.0 for x in rgb]
-    _, s, _ = colorsys.rgb_to_hsv(r, g, b)
-    return s
-
-_sorted_by_sat = sorted(rgb_palette, key=get_saturation)
-
-# Theme (Extracted from Palette)
-BG_COLOR = luma_sorted_colors[0]    
-TEXT_COLOR = luma_sorted_colors[-1] 
-UI_BORDER = luma_sorted_colors[min(3, len(luma_sorted_colors)-1)]
-TEXT_DIM  = UI_BORDER
-ACCENT    = _sorted_by_sat[-1]
+    os.makedirs("images", exist_ok=True)
+    os.makedirs("reports", exist_ok=True)
+    study = PixelPerfectModule4V4()
+    # Inject sorted colors into study instance since they are used as self.luma_sorted_colors etc.
+    study.luma_sorted_colors = luma_sorted_colors
+    study.hue_sorted_colors = hue_sorted_colors
+    
+    img = study.assemble(scale)
+    img.save(OUTPUT_IMAGE)
+    study.generate_markdown()
+    print(f"Saved {OUTPUT_IMAGE}")
+    print(f"MD Saved: {OUTPUT_MD}")
 
 class PixelPerfectModule4V4:
     def __init__(self):
@@ -254,19 +266,19 @@ class PixelPerfectModule4V4:
         
         # Row 1: NEU GRAY
         y1, h1 = content_y, int(40 * scale)
-        self.draw_neu_gray_diagonal(pixels, data_x, y1, data_w, h1, hue_sorted_colors)
+        self.draw_neu_gray_diagonal(pixels, data_x, y1, data_w, h1, self.hue_sorted_colors)
         self.draw_ui_element(draw, data_x, y1, data_w, h1, "NEU GRAY", "ID:21", scale)
         
         # Row 2: PAL
         y2 = y1 + h1 + spacing + int(20 * scale)
         h2 = int(20 * scale)
-        self.draw_pal_row_scanline(pixels, data_x, y2, data_w, h2, luma_sorted_colors)
+        self.draw_pal_row_scanline(pixels, data_x, y2, data_w, h2, self.luma_sorted_colors)
         self.draw_ui_element(draw, data_x, y2, data_w, h2, "PAL SCANLINE", "ID:22", scale)
         
         # Row 3: HLF
         y3 = y2 + h2 + spacing + int(20 * scale)
         h3 = int(40 * scale)
-        self.draw_hlf_row_specular(pixels, data_x, y3, data_w, h3, luma_sorted_colors, scale)
+        self.draw_hlf_row_specular(pixels, data_x, y3, data_w, h3, self.luma_sorted_colors, scale)
         self.draw_ui_element(draw, data_x, y3, data_w, h3, "HLF SPECULAR", "ID:23", scale)
 
         # Row 4: RANDOM PAIRS
@@ -299,16 +311,6 @@ This version introduces creative textures and new data points to differentiate t
         with open(OUTPUT_MD, "w") as f:
             f.write(md)
         print(f"MD Saved: {OUTPUT_MD}")
-
-def run(scale=DEFAULT_SCALE):
-    os.makedirs("images", exist_ok=True)
-    os.makedirs("reports", exist_ok=True)
-    study = PixelPerfectModule4V4()
-    img = study.assemble(scale)
-    img.save(OUTPUT_IMAGE)
-    study.generate_markdown()
-    print(f"Saved {OUTPUT_IMAGE}")
-    print(f"MD Saved: {OUTPUT_MD}")
 
 if __name__ == "__main__":
     run()
