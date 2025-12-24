@@ -10,7 +10,6 @@ import math
 # ==========================================
 DEFAULT_SCALE = 1.0
 OUTPUT_IMAGE = os.path.join("images", "module3.png")
-OUTPUT_MD = os.path.join("reports", "module3.md")
 
 # Configuration inherited from main.py
 PALETTE_HEX = []
@@ -23,7 +22,7 @@ GRID_LINE = (0, 0, 0)
 FONT_FILENAME = ""
 FONT_URL = ""
 
-def run(scale=DEFAULT_SCALE, color_scheme=None):
+def run(scale=DEFAULT_SCALE, color_scheme=None, output_image=None):
     if color_scheme:
         global PALETTE_HEX, BG_COLOR, UI_BORDER, TEXT_MAIN, TEXT_DIM, ACCENT, GRID_LINE, FONT_FILENAME, FONT_URL
         PALETTE_HEX = color_scheme['PALETTE_HEX']
@@ -36,13 +35,13 @@ def run(scale=DEFAULT_SCALE, color_scheme=None):
         FONT_FILENAME = color_scheme['FONT_FILENAME']
         FONT_URL = color_scheme['FONT_URL']
 
-    os.makedirs("images", exist_ok=True)
-    os.makedirs("reports", exist_ok=True)
+    out_img = output_image if output_image else OUTPUT_IMAGE
+
+    os.makedirs(os.path.dirname(out_img), exist_ok=True)
     study = ThreeDAnalysisFinalV3(PALETTE_HEX)
     img = study.assemble(scale)
-    img.save(OUTPUT_IMAGE)
-    study.generate_markdown()
-    print(f"Saved {OUTPUT_IMAGE}")
+    img.save(out_img)
+    print(f"Saved {out_img}")
 
 # Layout Config (Base dimensions at scale 1.0)
 BASE_WIDTH = 1600
@@ -294,30 +293,6 @@ class ThreeDAnalysisFinalV3:
         canvas.paste(self.render_shifted_bars_organized(col_right_w, row_bot_h, scale), (col_right_x, bot_y))
         self.draw_ui_element(draw, col_right_x, bot_y, col_right_w, row_bot_h, "BRI & SAT/WAVE", "ID:20", scale)
         return canvas
-
-    def generate_markdown(self):
-        md = f"""
-# Module 3: 3D Space & Distribution (V3 Organized)
-**Generated ID:** NORD_MOD3_V3
-
-### 1. Brightness & Hue Analysis
-* **ID:12 (BRI MATCH):** Organic sediment visualization of luminance.
-* **ID:18 (BRI-HUE SCATTER):** Distribution of colors across Hue and Brightness.
-
-### 2. 3D Color Space
-* **ID:13 (ISO-A):** Standard RGB cube view.
-* **ID:14 (ISO-B):** Rotated GBR cube view.
-* **ID:15 (ISO-C):** Rotated BRG cube view.
-
-### 3. Saturation & Wave
-* **ID:16 (USEFUL HUES):** 6x6 grid fill.
-* **ID:17 (SAT ^):** Vertical saturation distribution (Normal).
-* **ID:19 (SAT v):** Vertical saturation distribution (Inverted).
-* **ID:20 (BRI & SAT/WAVE):** Refined "organized chaos" visualization.
-"""
-        with open(OUTPUT_MD, "w") as f:
-            f.write(md)
-        print(f"MD Saved: {OUTPUT_MD}")
 
 if __name__ == "__main__":
     run()

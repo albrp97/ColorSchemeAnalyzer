@@ -9,7 +9,6 @@ import random
 # ==========================================
 DEFAULT_SCALE = 2.0
 OUTPUT_IMAGE = os.path.join("images", "module4.png")
-OUTPUT_MD = os.path.join("reports", "module4.md")
 
 # Base Dimensions (At Scale 1.0)
 BASE_WIDTH = 1600
@@ -32,7 +31,7 @@ rgb_palette = []
 luma_sorted_colors = []
 hue_sorted_colors = []
 
-def run(scale=DEFAULT_SCALE, color_scheme=None):
+def run(scale=DEFAULT_SCALE, color_scheme=None, output_image=None):
     if color_scheme:
         global PALETTE_HEX, BG_COLOR, UI_BORDER, TEXT_COLOR, TEXT_DIM, ACCENT, FONT_FILENAME, FONT_URL
         global rgb_palette, luma_sorted_colors, hue_sorted_colors
@@ -56,18 +55,17 @@ def run(scale=DEFAULT_SCALE, color_scheme=None):
         hue_sorted_indices = np.argsort(hues)
         hue_sorted_colors = [rgb_palette[i] for i in hue_sorted_indices]
 
-    os.makedirs("images", exist_ok=True)
-    os.makedirs("reports", exist_ok=True)
+    out_img = output_image if output_image else OUTPUT_IMAGE
+
+    os.makedirs(os.path.dirname(out_img), exist_ok=True)
     study = PixelPerfectModule4V4()
     # Inject sorted colors into study instance since they are used as self.luma_sorted_colors etc.
     study.luma_sorted_colors = luma_sorted_colors
     study.hue_sorted_colors = hue_sorted_colors
     
     img = study.assemble(scale)
-    img.save(OUTPUT_IMAGE)
-    study.generate_markdown()
-    print(f"Saved {OUTPUT_IMAGE}")
-    print(f"MD Saved: {OUTPUT_MD}")
+    img.save(out_img)
+    print(f"Saved {out_img}")
 
 class PixelPerfectModule4V4:
     def __init__(self):
@@ -288,29 +286,6 @@ class PixelPerfectModule4V4:
         self.draw_ui_element(draw, data_x, y4, data_w, h4, "RANDOM PAIRS", "ID:25", scale)
 
         return canvas
-
-    def generate_markdown(self):
-        md = f"""
-# Module 4: The Master Strip (Creative Rework)
-**Generated ID:** NORD_MOD4_PIXEL_V4
-
-This version introduces creative textures and new data points to differentiate the rows visually.
-
-## Row 1: NEU GRAY (Diagonal Hue Scan)
-* **ID:21 (NEU GRAY):** Diagonal Split, sorted by Hue. Solid color vs Dithered Gray match.
-
-## Row 2: PAL (Scanline Ramp)
-* **ID:22 (PAL SCANLINE):** Continuous strip sorted by Luminance. Alternating horizontal lines show the base color and an 80% brightness version.
-
-## Row 3: HLF (Specular Highlight Stack)
-* **ID:23 (HLF SPECULAR):** Separated stacks sorted by Luminance. Top bar is a Highlight (Specular) tint.
-
-## Row 4: RANDOM PAIRS
-* **ID:25 (RANDOM PAIRS):** A collection of random color pairings from the palette to test contrast and harmony.
-"""
-        with open(OUTPUT_MD, "w") as f:
-            f.write(md)
-        print(f"MD Saved: {OUTPUT_MD}")
 
 if __name__ == "__main__":
     run()

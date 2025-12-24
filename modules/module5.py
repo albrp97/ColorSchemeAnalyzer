@@ -15,7 +15,6 @@ import urllib.request
 # ==========================================
 DEFAULT_SCALE = 1.0
 OUTPUT_IMAGE = os.path.join("images", "module5.png")
-OUTPUT_MD = os.path.join("reports", "module5.md")
 
 # Configuration inherited from main.py
 PALETTE_HEX = []
@@ -36,7 +35,7 @@ BASE_HEIGHT = 1100
 BASE_MARGIN = 40
 BASE_SPACING = 20
 
-def run(scale=DEFAULT_SCALE, color_scheme=None):
+def run(scale=DEFAULT_SCALE, color_scheme=None, output_image=None):
     if color_scheme:
         global PALETTE_HEX, BG_COLOR_RGB, BG_COLOR_HEX, TEXT_COLOR_RGB, PLOT_BG_RGB, UI_BORDER, TEXT_DIM, ACCENT, FONT_FILENAME, FONT_URL, rgb_palette
         PALETTE_HEX = color_scheme['PALETTE_HEX']
@@ -51,13 +50,13 @@ def run(scale=DEFAULT_SCALE, color_scheme=None):
         FONT_URL = color_scheme['FONT_URL']
         rgb_palette = [tuple(int(PALETTE_HEX[i].lstrip('#')[j:j+2], 16) for j in (0, 2, 4)) for i in range(len(PALETTE_HEX))]
 
-    os.makedirs("images", exist_ok=True)
-    os.makedirs("reports", exist_ok=True)
+    out_img = output_image if output_image else OUTPUT_IMAGE
+
+    os.makedirs(os.path.dirname(out_img), exist_ok=True)
     study = Module5Normalized()
     img = study.assemble(scale)
-    img.save(OUTPUT_IMAGE)
-    study.generate_markdown()
-    print(f"Saved {OUTPUT_IMAGE}")
+    img.save(out_img)
+    print(f"Saved {out_img}")
 
 # ==========================================
 # 1. MATPLOTLIB GENERATOR (4x4 Grid)
@@ -270,25 +269,6 @@ class Module5Normalized:
         self.draw_ui_element(draw, polar_center_x - polar_radius, content_y, polar_radius*2, polar_radius*2, "POLAR_SAT", "ID:P01", scale)
 
         return canvas
-
-    def generate_markdown(self):
-        md_content = f"""
-# Contour & Polar Analysis: Nord Palette
-**Generated ID:** NORD_MOD5_CONTOUR
-
-## 1. 12-Bit Colspace (Top)
-A 4x4 grid of contour plots. Each cell represents one color from the Nord palette, showing its interaction with the background color.
-* **Top 8:** Radial sweeps.
-* **Bottom 8:** Random blob interference patterns.
-
-## 2. Polar Saturation (Bottom)
-A polar plot where:
-* **Angle:** Represents Hue.
-* **Distance from Center:** Represents Saturation (Normalized to the most saturated color in the palette).
-"""
-        with open(OUTPUT_MD, "w") as f:
-            f.write(md_content)
-        print(f"Markdown saved to {OUTPUT_MD}")
 
 if __name__ == "__main__":
     run()

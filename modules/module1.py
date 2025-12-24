@@ -9,7 +9,6 @@ import urllib.request
 # ==========================================
 DEFAULT_SCALE = 1.0
 OUTPUT_IMAGE = os.path.join("images", "module1.png")
-OUTPUT_MD = os.path.join("reports", "module1.md")
 
 # Base Dimensions (At Scale 1.0)
 BASE_WIDTH = 1470
@@ -30,7 +29,7 @@ ACCENT = (0, 0, 0)
 FONT_FILENAME = ""
 FONT_URL = ""
 
-def run(scale=DEFAULT_SCALE, color_scheme=None):
+def run(scale=DEFAULT_SCALE, color_scheme=None, output_image=None):
     if color_scheme:
         global PALETTE_HEX, BG_COLOR, UI_BORDER, TEXT_MAIN, TEXT_DIM, ACCENT, FONT_FILENAME, FONT_URL
         PALETTE_HEX = color_scheme['PALETTE_HEX']
@@ -42,13 +41,13 @@ def run(scale=DEFAULT_SCALE, color_scheme=None):
         FONT_FILENAME = color_scheme['FONT_FILENAME']
         FONT_URL = color_scheme['FONT_URL']
 
-    os.makedirs("images", exist_ok=True)
-    os.makedirs("reports", exist_ok=True)
+    out_img = output_image if output_image else OUTPUT_IMAGE
+
+    os.makedirs(os.path.dirname(out_img), exist_ok=True)
     study = IndustrialColorStudy(PALETTE_HEX)
     img = study.assemble(scale)
-    img.save(OUTPUT_IMAGE)
-    study.generate_markdown()
-    print(f"Saved {OUTPUT_IMAGE}")
+    img.save(out_img)
+    print(f"Saved {out_img}")
 
 class IndustrialColorStudy:
     def __init__(self, palette_hex):
@@ -207,27 +206,6 @@ class IndustrialColorStudy:
             return canvas.crop((0, 0, w, content_y + panel_h + spacing))
 
         return canvas
-
-    def generate_markdown(self):
-        md_content = f"""
-# Color Study Analysis: Nord Palette
-**Generated ID:** NORD_MOD1_INDUSTRIAL
-
-## 1. Structure Columns (Left)
-* **ID:00 (RAW):** The palette in its original definition order.
-* **ID:01 (LUM):** Grayscale sort (Dark to Light).
-* **ID:02 (REF):** Natural color sort (Dark to Light).
-* **ID:03 (SAT+):** Forced saturation.
-
-## 2. Saturation Models (Right)
-Voronoi diagrams showing which palette color is the nearest match for a given Hue (X) and Brightness (Y).
-* **PURE (S:1.0):** How the palette handles neon/bright environments.
-* **MID (S:0.5):** How the palette handles standard lighting.
-* **MUTE (S:0.2):** How the palette handles foggy/dull environments.
-"""
-        with open(OUTPUT_MD, "w") as f:
-            f.write(md_content)
-        print(f"Markdown saved to {OUTPUT_MD}")
 
 if __name__ == "__main__":
     run()

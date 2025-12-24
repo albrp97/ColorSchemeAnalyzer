@@ -10,7 +10,7 @@ DEFAULT_SCALE = 1.0
 def darken_color(rgb, factor=0.7):
     return tuple(max(0, int(c * factor)) for c in rgb)
 
-def run(scale=DEFAULT_SCALE, color_scheme=None):
+def run(scale=DEFAULT_SCALE, color_scheme=None, output_path=None, input_dir=None, prefix=None):
     if not color_scheme:
         print("Error: No color scheme provided to ultimate module.")
         return
@@ -18,9 +18,19 @@ def run(scale=DEFAULT_SCALE, color_scheme=None):
     print("Generating Ultimate Image...")
     
     # 1. Load all module images
-    image_paths = [
-        os.path.join("images", f"module{i}.png") for i in range(1, 9)
-    ]
+    if input_dir:
+        if prefix:
+            image_paths = [
+                os.path.join(input_dir, f"{prefix}_module{i}.png") for i in range(1, 9)
+            ]
+        else:
+            image_paths = [
+                os.path.join(input_dir, f"module{i}.png") for i in range(1, 9)
+            ]
+    else:
+        image_paths = [
+            os.path.join("images", f"module{i}.png") for i in range(1, 9)
+        ]
     
     images = []
     for path in image_paths:
@@ -167,6 +177,7 @@ def run(scale=DEFAULT_SCALE, color_scheme=None):
     draw.text((box_x + (box_w - a_w)//2, start_y + t_h + int(15 * scale)), author_text, fill=color_scheme['ACCENT'], font=font_label)
 
     # 8. Save
-    output_path = os.path.join("images", "ultimate_analysis.png")
-    ultimate.save(output_path)
-    print(f"Ultimate image saved to {output_path}")
+    out_path = output_path if output_path else os.path.join("images", "ultimate_analysis.png")
+    os.makedirs(os.path.dirname(out_path), exist_ok=True)
+    ultimate.save(out_path)
+    print(f"Ultimate image saved to {out_path}")

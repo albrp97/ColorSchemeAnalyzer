@@ -10,7 +10,6 @@ import urllib.request
 # ==========================================
 DEFAULT_SCALE = 2.0
 OUTPUT_IMAGE = os.path.join("images", "module8.png")
-OUTPUT_MD = os.path.join("reports", "module8.md")
 
 # Base Dimensions (At Scale 1.0)
 BASE_WIDTH = 1600
@@ -29,7 +28,7 @@ FONT_URL = ""
 rgb_palette = []
 palette_arr = np.array([])
 
-def run(scale=DEFAULT_SCALE, color_scheme=None):
+def run(scale=DEFAULT_SCALE, color_scheme=None, output_image=None):
     if color_scheme:
         global PALETTE_HEX, BG_COLOR, TEXT_COLOR, UI_BORDER, TEXT_DIM, ACCENT, FONT_FILENAME, FONT_URL, rgb_palette, palette_arr
         PALETTE_HEX = color_scheme['PALETTE_HEX']
@@ -43,13 +42,13 @@ def run(scale=DEFAULT_SCALE, color_scheme=None):
         rgb_palette = [tuple(int(PALETTE_HEX[i].lstrip('#')[j:j+2], 16) for j in (0, 2, 4)) for i in range(len(PALETTE_HEX))]
         palette_arr = np.array(rgb_palette)
 
-    os.makedirs("images", exist_ok=True)
-    os.makedirs("reports", exist_ok=True)
+    out_img = output_image if output_image else OUTPUT_IMAGE
+
+    os.makedirs(os.path.dirname(out_img), exist_ok=True)
     study = Module8PrimaryRanges()
     img = study.assemble(scale)
-    img.save(OUTPUT_IMAGE)
-    study.generate_markdown()
-    print(f"Saved {OUTPUT_IMAGE}")
+    img.save(out_img)
+    print(f"Saved {out_img}")
 
 class Module8PrimaryRanges:
     def __init__(self):
@@ -187,33 +186,6 @@ class Module8PrimaryRanges:
             curr_y += strip_h + spacing
 
         return canvas
-
-    def generate_markdown(self):
-        md = f"""
-# Module 8: Primary Ranges
-**Generated ID:** NORD_MOD8_RANGES
-
-This module is a stress test for the palette across the 9 primary hue channels.
-
-### The Logic
-Each horizontal bar represents a specific hue (Red, Orange, Yellow, etc.).
-* **Left to Right:** Darkness to Lightness (Value 0% -> 100%).
-* **Bottom to Top:** Dullness to Vividness (Saturation 0% -> 100%).
-
-### Analysis
-* **ID:36 (RED RANGE):** Red hue channel.
-* **ID:37 (ORANGE RANGE):** Orange hue channel.
-* **ID:38 (YELLOW RANGE):** Yellow hue channel.
-* **ID:39 (GREEN RANGE):** Green hue channel.
-* **ID:40 (CYAN RANGE):** Cyan hue channel.
-* **ID:41 (AZURE RANGE):** Azure hue channel.
-* **ID:42 (BLUE RANGE):** Blue hue channel.
-* **ID:43 (VIOLET RANGE):** Violet hue channel.
-* **ID:44 (MAGENTA RANGE):** Magenta hue channel.
-"""
-        with open(OUTPUT_MD, "w") as f:
-            f.write(md)
-        print(f"Markdown saved to {OUTPUT_MD}")
 
 if __name__ == "__main__":
     run()

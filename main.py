@@ -213,6 +213,87 @@ THEMES = {
         "#c0c0d9", "#e6e6fa", "#ffffff", "#6a0dad", "#8a2be2", 
         "#ff00ff", "#e056fd", "#00ffff", "#00bfff", "#4169e1"
     ],
+    "Cyberpunk2077": [ # Night City: Samurai Yellow, Glitch Blue, Dark Grid
+        "#000000", "#181818", "#2a2a2a", "#fcee0a", "#00f0ff", 
+        "#ff003c", "#39ff14", "#ffffff", "#b3b3b3", "#ededed", 
+        "#2de2e6", "#fdfa2a", "#ff2a6d", "#05d9e8", "#d1f7ff"
+    ],
+    "Vaporwave": [ # 1995 Aesthetic: Greek Busts, Windows 95, Neon Pastels
+        "#181226", "#251b3b", "#362657", "#ff71ce", "#01cdfe", 
+        "#05ffa1", "#b967ff", "#fffb96", "#2c2c54", "#e0e0e0", 
+        "#ffffff", "#ff9ff3", "#feca57", "#48dbfb", "#5f27cd"
+    ],
+    "Monokai": [ # The Classic: Sublime Text's legacy. High contrast & industrial
+        "#272822", "#3e3d32", "#75715e", "#f8f8f2", "#66d9ef", 
+        "#a6e22e", "#f92672", "#fd971f", "#e6db74", "#ae81ff", 
+        "#cfcfc2", "#d6d6d6", "#ffffff", "#49483e", "#a1efe4"
+    ],
+    "SolarizedDark": [ # Low Contrast: Ethan Schoonover's masterpiece. Teal-based.
+        "#002b36", "#073642", "#586e75", "#657b83", "#839496", 
+        "#93a1a1", "#eee8d5", "#fdf6e3", "#b58900", "#cb4b16", 
+        "#dc322f", "#d33682", "#6c71c4", "#268bd2", "#2aa198", "#859900"
+    ],
+    "SpiderVerse": [ # Miles Morales: Glitch, Ben-Day dots, Ink Black, Neon
+        "#000000", "#0a0a0a", "#141414", "#202020", "#ffffff", 
+        "#ff003c", "#05f2db", "#fafe35", "#a020f0", "#453a59", 
+        "#e0e0e0", "#ff3333", "#00ccff", "#ccff00", "#9900cc"
+    ],
+    "TronLegacy": [ # The Grid: Bioluminescent Cyan, Orange, Deepest Grey
+        "#0d0d0d", "#1a1a1a", "#262626", "#333333", "#ffffff", 
+        "#6fc3df", "#ffe64d", "#df740c", "#e6ffff", "#8fd8f7", 
+        "#00a1e4", "#d95a00", "#ffcc00", "#f2f2f2", "#808080"
+    ],
+    "Gameboy": [ # DMG-01: Retro Green Monochrome (Adapted for visibility)
+        "#0f380f", "#306230", "#8bac0f", "#9bbc0f", "#081820", # Original 4 + Black
+        "#e0f8cf", "#ffffff", "#4b5c22", "#2e4018", "#1c2b12", 
+        "#d4e8b8", "#c8dcb0", "#a8c090", "#789060", "#506840"
+    ],
+    "Coffee": [ # Latte Art: Warm browns, creams, espresso (Relaxing)
+        "#1f1a17", "#2e2520", "#42362e", "#594a40", "#736255", 
+        "#8c7a6b", "#a69586", "#bfb2a6", "#d9d0c7", "#f2f0eb", 
+        "#c0392b", "#d35400", "#e67e22", "#f1c40f", "#ffffff"
+    ],
+    "NierAutomata": [ # Glory to Mankind: Warm Dark Greys, Signature Beige, Muted Alert Red
+        "#23211e", "#2b2b28", "#383530", "#48453e", "#58544a", 
+        "#6b655a", "#878170", "#a39d88", "#dad4bb", "#eae5d1", 
+        "#c4bd9e", "#9e8f78", "#8c3f3f", "#cd664d", "#d6a66e"
+    ],
+    "Blueprint": [ # Engineering: Deep blueprint blue, white lines, safety yellow
+        "#0a2e52", "#0f3d6b", "#164d85", "#24609e", "#ffffff", 
+        "#dbeeff", "#f0f8ff", "#f1c40f", "#f39c12", "#e74c3c", 
+        "#2ecc71", "#95a5a6", "#bdc3c7", "#ecf0f1", "#00a8ff"
+    ],
+    "Portal": [ # Aperture Science: Sterile Grey, Weighted Cube Pink, Portals
+        "#191919", "#262626", "#404040", "#808080", "#bdc3c7", 
+        "#ecf0f1", "#ffffff", "#ff9a00", "#ffba49", "#00a2ff", 
+        "#2196f3", "#ff6b6b", "#e74c3c", "#34495e", "#2c3e50"
+    ],
+    "Minecraft": [ # The Overworld: Obsidian, Dirt, Grass, Diamond, Redstone
+        "#120e0e", "#1f1a17", "#2e211b", "#3b2e2a", "#594034", 
+        "#75a342", "#7dbd42", "#52eed8", "#34d9c0", "#f1c40f", 
+        "#d63031", "#ff0000", "#8c8c8c", "#7f8c8d", "#ffffff"
+    ],
+    "Joker": [ # Gotham Villain: Deep Purple, Acid Green, Blood Red, White Face
+        "#1a0a1a", "#291029", "#3b173b", "#4b2e83", "#6a1b9a", 
+        "#8e44ad", "#f5f5f5", "#2ecc71", "#00ff00", "#c0392b", 
+        "#e74c3c", "#f1c40f", "#ffffff", "#bdc3c7", "#2c3e50"
+    ],
+    "SilentHill": [ # Otherworld: Rust, Dried Blood, Fog Grey, Static Black
+        "#1a1212", "#2b1d1d", "#3e2727", "#5c3a3a", "#8c3f3f", 
+        "#a62828", "#bdc3c7", "#d1d8e0", "#95a5a6", "#7f8c8d", 
+        "#5c5c5c", "#3d3d3d", "#dcdde1", "#c0392b", "#701616"
+    ],
+    "TerminalAmber": [ # CRT Monitor: Pitch black, phosphorescent amber
+        "#000000", "#0a0800", "#141000", "#1f1800", "#2b2100", 
+        "#ffb000", "#ffcc00", "#ffd700", "#ffaa00", "#e69500", 
+        "#b37400", "#805300", "#4d3200", "#ffffff", "#f1f1f1"
+    ],
+    "Starfield": [ # NASA-Punk: Void Black, Ship White, Constellation Ribbon (Red/Orange/Gold/Blue)
+        "#0b0d12", "#151921", "#232a35", "#3d4756", "#5a6575", 
+        "#dce1e6", "#ffffff", "#cf4639", "#de8e36", "#d4af37", 
+        "#2c5282", "#3a7cbd", "#4fd1c5", "#8195a8", "#1a1a1a"
+    ],
+
 }
 
 # ==========================================
@@ -327,37 +408,53 @@ def main():
     # Generate the scheme object
     scheme = generate_color_scheme(active_name, active_palette)
 
+    # Define output paths
+    theme_dir = active_name.replace(" ", "_")
+    images_dir = os.path.join("images", "themes", theme_dir)
+    ultimate_dir = os.path.join("images", "ultimate")
+    
+    ultimate_output = os.path.join(ultimate_dir, f"{theme_dir}_ultimate.png")
+
+    # Check if already processed
+    if os.path.exists(ultimate_output):
+        print(f"\nTheme '{active_name}' already processed. Skipping analysis.")
+        print(f"Ultimate image: {ultimate_output}")
+        return
+
+    os.makedirs(images_dir, exist_ok=True)
+    os.makedirs(ultimate_dir, exist_ok=True)
+
     print(f"Starting Color Study Analysis Suite [Scale: {GLOBAL_SCALE}]...")
     
-    modules = [
-        ("Module 1: Industrial Color Study", module1),
-        ("Module 2: Aligned Linear Analysis", module2),
-        ("Module 3: 3D Space & Distribution", module3),
-        ("Module 4: The Master Strip", module4),
-        ("Module 5: 4x4 Matrix & Normalized Polar Analysis", module5),
-        ("Module 6: Hybrid Gamut", module6),
-        ("Module 7: Complementary Desaturation Planes", module7),
-        ("Module 8: Primary Ranges", module8),
+    modules_list = [
+        ("Module 1: Industrial Color Study", module1, "module1"),
+        ("Module 2: Aligned Linear Analysis", module2, "module2"),
+        ("Module 3: 3D Space & Distribution", module3, "module3"),
+        ("Module 4: The Master Strip", module4, "module4"),
+        ("Module 5: 4x4 Matrix & Normalized Polar Analysis", module5, "module5"),
+        ("Module 6: Hybrid Gamut", module6, "module6"),
+        ("Module 7: Complementary Desaturation Planes", module7, "module7"),
+        ("Module 8: Primary Ranges", module8, "module8"),
     ]
     
-    for name, mod in modules:
+    for name, mod, filename in modules_list:
         print(f"\nExecuting {name}...")
         try:
-            # Pass the generated scheme to the module
-            mod.run(scale=GLOBAL_SCALE, color_scheme=scheme)
+            # Pass the generated scheme and output paths to the module
+            out_img = os.path.join(images_dir, f"{theme_dir}_{filename}.png")
+            mod.run(scale=GLOBAL_SCALE, color_scheme=scheme, output_image=out_img)
         except Exception as e:
             print(f"Error executing {name}: {e}")
             
     # Generate the ultimate combined image
     try:
-        ultimate.run(scale=GLOBAL_SCALE, color_scheme=scheme)
+        ultimate.run(scale=GLOBAL_SCALE, color_scheme=scheme, output_path=ultimate_output, input_dir=images_dir, prefix=theme_dir)
     except Exception as e:
         print(f"Error generating ultimate image: {e}")
 
     print("\nAll modules executed successfully.")
-    print("Images: ./images/")
-    print("Reports: ./reports/")
-    print("Scripts: ./modules/")
+    print(f"Images: {images_dir}")
+    print(f"Ultimate: {ultimate_output}")
 
 if __name__ == "__main__":
     main()

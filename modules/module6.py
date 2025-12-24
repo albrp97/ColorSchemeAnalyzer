@@ -10,7 +10,6 @@ import urllib.request
 # ==========================================
 DEFAULT_SCALE = 2.0
 OUTPUT_IMAGE = os.path.join("images", "module6.png")
-OUTPUT_MD = os.path.join("reports", "module6.md")
 
 # Base Dimensions (At Scale 1.0)
 BASE_WIDTH = 1600
@@ -29,7 +28,7 @@ FONT_URL = ""
 rgb_palette = []
 palette_arr = np.array([])
 
-def run(scale=DEFAULT_SCALE, color_scheme=None):
+def run(scale=DEFAULT_SCALE, color_scheme=None, output_image=None):
     if color_scheme:
         global PALETTE_HEX, BG_COLOR, TEXT_COLOR, UI_BORDER, TEXT_DIM, ACCENT, FONT_FILENAME, FONT_URL, rgb_palette, palette_arr
         PALETTE_HEX = color_scheme['PALETTE_HEX']
@@ -43,13 +42,13 @@ def run(scale=DEFAULT_SCALE, color_scheme=None):
         rgb_palette = [tuple(int(PALETTE_HEX[i].lstrip('#')[j:j+2], 16) for j in (0, 2, 4)) for i in range(len(PALETTE_HEX))]
         palette_arr = np.array(rgb_palette)
 
-    os.makedirs("images", exist_ok=True)
-    os.makedirs("reports", exist_ok=True)
+    out_img = output_image if output_image else OUTPUT_IMAGE
+
+    os.makedirs(os.path.dirname(out_img), exist_ok=True)
     study = Module6SwappedGamut()
     img = study.assemble(scale)
-    img.save(OUTPUT_IMAGE)
-    study.generate_markdown()
-    print(f"Saved {OUTPUT_IMAGE}")
+    img.save(out_img)
+    print(f"Saved {out_img}")
 
 class Module6SwappedGamut:
     def __init__(self):
@@ -221,25 +220,6 @@ class Module6SwappedGamut:
         self.draw_ui_element(draw, x4, y4, box_w, box_h, "FISH SPHERE (S:37%)", "ID:29", scale)
 
         return canvas
-
-    def generate_markdown(self):
-        md = f"""
-# Module 6: Hybrid Gamut (Swapped Layout)
-**Generated ID:** NORD_MOD6_SWAPPED
-
-This module contrasts two different ways of visualizing the palette's color space.
-
-### Top Row: 3D Lit Spheres
-* **ID:26 (LIT SPHERE S:60%):** Shaded 3D form with medium saturation.
-* **ID:27 (LIT SPHERE S:80%):** Shaded 3D form with high saturation.
-
-### Bottom Row: Big Fisheye Slices
-* **ID:28 (FISH SPHERE S:100%):** Large fisheye slice with maximum saturation.
-* **ID:29 (FISH SPHERE S:37%):** Large fisheye slice with low saturation.
-"""
-        with open(OUTPUT_MD, "w") as f:
-            f.write(md)
-        print(f"Markdown saved to {OUTPUT_MD}")
 
 if __name__ == "__main__":
     run()

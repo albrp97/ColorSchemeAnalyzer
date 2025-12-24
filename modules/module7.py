@@ -10,7 +10,6 @@ import urllib.request
 # ==========================================
 DEFAULT_SCALE = 2.0
 OUTPUT_IMAGE = os.path.join("images", "module7.png")
-OUTPUT_MD = os.path.join("reports", "module7.md")
 
 # Base Dimensions (At Scale 1.0)
 BASE_WIDTH = 1600
@@ -29,7 +28,7 @@ FONT_URL = ""
 rgb_palette = []
 palette_arr = np.array([])
 
-def run(scale=DEFAULT_SCALE, color_scheme=None):
+def run(scale=DEFAULT_SCALE, color_scheme=None, output_image=None):
     if color_scheme:
         global PALETTE_HEX, BG_COLOR, TEXT_COLOR, UI_BORDER, TEXT_DIM, ACCENT, FONT_FILENAME, FONT_URL, rgb_palette, palette_arr
         PALETTE_HEX = color_scheme['PALETTE_HEX']
@@ -43,13 +42,13 @@ def run(scale=DEFAULT_SCALE, color_scheme=None):
         rgb_palette = [tuple(int(PALETTE_HEX[i].lstrip('#')[j:j+2], 16) for j in (0, 2, 4)) for i in range(len(PALETTE_HEX))]
         palette_arr = np.array(rgb_palette)
 
-    os.makedirs("images", exist_ok=True)
-    os.makedirs("reports", exist_ok=True)
+    out_img = output_image if output_image else OUTPUT_IMAGE
+
+    os.makedirs(os.path.dirname(out_img), exist_ok=True)
     study = Module7Complementaries()
     img = study.assemble(scale)
-    img.save(OUTPUT_IMAGE)
-    study.generate_markdown()
-    print(f"Saved {OUTPUT_IMAGE}")
+    img.save(out_img)
+    print(f"Saved {out_img}")
 
 class Module7Complementaries:
     def __init__(self):
@@ -196,30 +195,6 @@ class Module7Complementaries:
             self.draw_ui_element(draw, x, y, plot_w, plot_h, label, id_str, scale)
 
         return canvas
-
-    def generate_markdown(self):
-        md = f"""
-# Module 7: Complementary Desaturation Planes
-**Generated ID:** NORD_MOD7_COMP
-
-This module visualizes how the palette handles transitions between opposing colors.
-
-### The Visualization Logic
-Each box represents a 2D slice of color space:
-* **X-Axis (Hue/Saturation):** The left edge is Color A. The right edge is Color B (its opposite). The center is Neutral Gray.
-* **Y-Axis (Brightness):** Top is White. Bottom is Black.
-
-### Analysis
-* **ID:30 (RED/CYAN):** Transition between Red and Cyan.
-* **ID:31 (ORANGE/AZURE):** Transition between Orange and Azure.
-* **ID:32 (YELLOW/BLUE):** Transition between Yellow and Blue.
-* **ID:33 (CHARTREUSE/VIOLET):** Transition between Chartreuse and Violet.
-* **ID:34 (GREEN/MAGENTA):** Transition between Green and Magenta.
-* **ID:35 (SPRING-GREEN/ROSE):** Transition between Spring-Green and Rose.
-"""
-        with open(OUTPUT_MD, "w") as f:
-            f.write(md)
-        print(f"Markdown saved to {OUTPUT_MD}")
 
 if __name__ == "__main__":
     run()

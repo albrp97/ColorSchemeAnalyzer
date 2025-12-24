@@ -9,7 +9,6 @@ import urllib.request
 # ==========================================
 DEFAULT_SCALE = 1.0
 OUTPUT_IMAGE = os.path.join("images", "module2.png")
-OUTPUT_MD = os.path.join("reports", "module2.md")
 
 # Configuration inherited from main.py
 PALETTE_HEX = []
@@ -21,7 +20,7 @@ ACCENT = (0, 0, 0)
 FONT_FILENAME = ""
 FONT_URL = ""
 
-def run(scale=DEFAULT_SCALE, color_scheme=None):
+def run(scale=DEFAULT_SCALE, color_scheme=None, output_image=None):
     if color_scheme:
         global PALETTE_HEX, BG_COLOR, UI_BORDER, TEXT_MAIN, TEXT_DIM, ACCENT, FONT_FILENAME, FONT_URL
         PALETTE_HEX = color_scheme['PALETTE_HEX']
@@ -33,13 +32,13 @@ def run(scale=DEFAULT_SCALE, color_scheme=None):
         FONT_FILENAME = color_scheme['FONT_FILENAME']
         FONT_URL = color_scheme['FONT_URL']
 
-    os.makedirs("images", exist_ok=True)
-    os.makedirs("reports", exist_ok=True)
+    out_img = output_image if output_image else OUTPUT_IMAGE
+
+    os.makedirs(os.path.dirname(out_img), exist_ok=True)
     study = FinalLinearStudy(PALETTE_HEX)
     img = study.assemble(scale)
-    img.save(OUTPUT_IMAGE)
-    study.generate_markdown()
-    print(f"Saved {OUTPUT_IMAGE}")
+    img.save(out_img)
+    print(f"Saved {out_img}")
 
 # Base Dimensions (At Scale 1.0)
 BASE_WIDTH = 1600
@@ -281,29 +280,6 @@ class FinalLinearStudy:
         self.draw_ui_element(draw, col2_x, curr_y, col2_w, h_match_grid, "CLOSE MATCHES: 30% (LOOSE)", "ID:11", scale)
         
         return canvas
-
-    def generate_markdown(self):
-        md = f"""
-# Module 2: Aligned Linear Analysis (Final)
-**Generated ID:** NORD_MOD2_V8
-
-## 1. Filter Stack (Top Left)
-* **ID:04 (FILTER STACK):** Shows the palette under various constraints (Brightness 65%, 10%, Saturation 50%, Luminance 50%).
-
-## 2. Main Stack (Bottom Left)
-* **ID:05 (RAW PALETTE):** The palette in its original definition order.
-* **ID:06 (LUMA SORT):** Sorted by luminance.
-* **ID:07 (HUE RAMP):** Smooth gradient sorted by hue.
-* **ID:08 (LUMA RAMP):** Smooth gradient sorted by luminance.
-
-## 3. Distribution & Matching (Right)
-* **ID:09 (INDEXED: 4x4):** 4x4 grid of the palette.
-* **ID:10 (CLOSE MATCHES: 10%):** Pairs of colors with less than 10% luminance difference.
-* **ID:11 (CLOSE MATCHES: 30%):** Pairs of colors with less than 30% luminance difference.
-"""
-        with open(OUTPUT_MD, "w") as f:
-            f.write(md)
-        print(f"Markdown saved to {OUTPUT_MD}")
 
 if __name__ == "__main__":
     run()
